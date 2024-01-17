@@ -134,6 +134,12 @@ export function Land() {
                       type="primary"
                       htmlType="submit"
                       style={{ width: "100%" }}
+                      onClick={() => {
+                        localStorage.setItem(
+                          "email",
+                          form.getFieldValue("email")
+                        );
+                      }}
                     >
                       Log in
                     </Button>
