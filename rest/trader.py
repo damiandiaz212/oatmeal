@@ -3,7 +3,7 @@ from alpha import Alpha
 from sentiment import SentimentTrader
 import os
 
-key = os.environ["API_KEY"]
+key = '9YMZNZBVZOUKAHOT'
 
 alpha = Alpha(key)
 trader = SentimentTrader(alpha, 1000)
@@ -11,7 +11,7 @@ trader = SentimentTrader(alpha, 1000)
 starttime = time.time()
 
 def heartbeat():
-    print("heartbeat")
+    print("heartbeat", flush=True)
     trader.examine_sentiment()
 
 while True:

@@ -4,7 +4,7 @@ class SentimentTrader:
     def __init__(self, alpha, max_order_cost):
         self.alpha = alpha
         self.max_order_cost = max_order_cost
-        self.base_url = os.environ['PORTFOLIO_URL']
+        self.base_url = 'https://mock-portfolio-wpxd.onrender.com'
     def is_bullish(self, entry):
         return entry['ticker_sentiment_label'] == 'Somewhat-Bullish' or entry['ticker_sentiment_label'] == 'Bullish'
     def is_bearish(self, entry):
@@ -13,7 +13,7 @@ class SentimentTrader:
         orders = []
         sentiment = self.alpha.sentiment()
         if not sentiment:
-            print('Api limit reached')
+            print('Api limit reached', flush=True)
             return 
         tickers = sentiment['ticker_sentiment']
         for entry in tickers:
@@ -31,4 +31,4 @@ class SentimentTrader:
                 r = requests.get(url)
                 data = r.json()
                 orders.append(data)
-        print(orders)
+        print(orders, flush=True)
