@@ -3,10 +3,13 @@ from flask_cors import cross_origin
 from flask import request, jsonify, make_response
 from alpha import Alpha
 from portfolio import Portfolio
+import os
 
 app = Flask(__name__)
 
-alpha = Alpha("B7JUWPKWMI04L5T5")
+key = environ["API_KEY"]
+
+alpha = Alpha(key)
 portfolio = Portfolio(10000, alpha)
 
 feed = []
@@ -31,4 +34,4 @@ def status():
    return portfolio.status()
 
 if __name__ == '__main__':
-    app.run(debug=True)
+   app.run()

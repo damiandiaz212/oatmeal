@@ -16,3 +16,12 @@ class Alpha:
         if resp == False:
             return False
         return resp["05. price"]
+    def sentiment(self, symbol=None):
+        if not symbol:
+            url = f'https://www.alphavantage.co/query?function=NEWS_SENTIMENT&apikey={self.key}'
+            r = requests.get(url)
+            data = r.json()
+            if "feed" in data:
+                return data["feed"][0]
+            else:
+                return False
