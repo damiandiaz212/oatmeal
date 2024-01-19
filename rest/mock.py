@@ -32,6 +32,3 @@ def sell_all(symbol):
 def status():
    print(feed)
    return portfolio.status()
-
-if __name__ == '__main__':
-   app.run()
