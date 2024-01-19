@@ -3,7 +3,7 @@ from alpha import Alpha
 from sentiment import SentimentTrader
 import os
 
-key = environ["API_KEY"]
+key = os.environ["API_KEY"]
 
 alpha = Alpha(key)
 trader = SentimentTrader(alpha, 1000)

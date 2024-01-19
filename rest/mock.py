@@ -7,7 +7,7 @@ import os
 
 app = Flask(__name__)
 
-key = environ["API_KEY"]
+key = os.environ["API_KEY"]
 
 alpha = Alpha(key)
 portfolio = Portfolio(10000, alpha)
