@@ -11,11 +11,14 @@ class Alpha:
             return data["Global Quote"]
         else:
             return False
-    def price(self, symbol):
+    def price(self, sym):
+        symbol = sym.upper()
         resp = self.quote(symbol)
-        if resp == False:
-            return False
-        return resp["05. price"]
+        if resp == False: 
+            return {"error" : 'Unable to execute order, no action was taken. Alpha service api limit may have been reached.' }
+        if "05. price" not in resp:
+            return {"error" : f'Unable to execute order, no action was taken. Empy object returned, check SYMBOL: {symbol}' }
+        return float(resp["05. price"])
     def sentiment(self, symbol=None):
         if not symbol:
             url = f'https://www.alphavantage.co/query?function=NEWS_SENTIMENT&apikey={self.key}'
