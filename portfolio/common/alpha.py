@@ -26,4 +26,4 @@ class Alpha:
         resp = self.fetch(f'https://www.alphavantage.co/query?function=NEWS_SENTIMENT&apikey={self.key}')
         if "feed" not in resp:
             return {"error" : f'Unable to fetch sentiment; response may have been empty.' }
-        return data["feed"][0]
+        return resp["feed"][0]
