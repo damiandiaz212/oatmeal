@@ -21,6 +21,7 @@ class TestDatabase(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        cls.db.connection.close()
         os.remove(cls.db_path)
 
     def test_save_and_load_all(self):
@@ -40,6 +41,3 @@ class TestDatabase(unittest.TestCase):
         self.db.delete('2')
         loaded_images = self.db.load_all().fetchall()
         self.assertEqual(len(loaded_images), 1)  # since we added one and deleted one, should still be one
-
-if __name__ == '__main__':
-    unittest.main()
