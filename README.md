@@ -1,4 +1,4 @@
-# Oatmeal
+# oatmeal
 
 [![Portfolio](https://github.com/damiandiaz212/oatmeal/actions/workflows/portfolio.yml/badge.svg)](https://github.com/damiandiaz212/oatmeal/actions/workflows/portfolio.yml)
 [![Portfolio Web](https://github.com/damiandiaz212/oatmeal/actions/workflows/dashboard.yml/badge.svg)](https://github.com/damiandiaz212/oatmeal/actions/workflows/dashboard.yml)
