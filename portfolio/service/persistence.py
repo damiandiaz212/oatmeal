@@ -4,15 +4,30 @@ class Database:
     def __init__(self, path):
         connection = sqlite3.connect(path, check_same_thread=False, isolation_level=None)
         self.cursor = connection.cursor()
-        self.cursor.execute("CREATE TABLE if not exists portfolio (id TEXT, name TEXT, starting REAL, buying_power REAL, balance REAL, adj REAL, portfolio TEXT)")
+        self.cursor.execute("CREATE TABLE if not exists portfolio (id TEXT PRIMARY KEY, name TEXT, starting REAL, buying_power REAL, balance REAL, adj REAL, portfolio TEXT)")
     def save(self, image):
-        try:
-            self.cursor.execute(f"INSERT INTO portfolio VALUES ('{image.id}', '{image.name}', {image.starting}, {image.buying_power}, {image.balance}, {image.adj}, '{image.portfolio}')")
-        except Exception as e:
-            print('Failed to save portoflio to db: ', e)
+        query = f"""
+                INSERT INTO portfolio VALUES('{image.id}', '{image.name}', {image.starting}, {image.buying_power}, {image.balance}, {image.adj}, '{image.portfolio}')
+                    ON CONFLICT(id) DO UPDATE SET
+                        starting={image.starting},
+                        buying_power={image.buying_power},
+                        balance={image.balance},
+                        adj={image.adj},
+                        portfolio='{image.portfolio}'
+                """
+        return self.execute_query('INSERT', query)
     def load_all(self):
-        rows = self.cursor.execute("SELECT * FROM portfolio").fetchall()
-        print(rows)
-        return rows
-    def clear(self):
-        pass
+        query = "SELECT * FROM portfolio"
+        return self.execute_query('SELECT', query)
+    def delete(self, id):
+        query = f"""
+                DELETE FROM portfolio
+                WHERE id='{id}'
+                """
+        return self.execute_query('DELETE', query)
+    def execute_query(self, statement, query):
+        try:
+            return self.cursor.execute(query)
+        except Exception as e:
+            print(f'Failed to execute {statement} to db: ', e)
+            return {}, 500

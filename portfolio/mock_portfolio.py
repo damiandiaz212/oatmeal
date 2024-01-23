@@ -30,7 +30,6 @@ def setup():
       p_temp.buying_power = image[4]
       p_temp.portfolio = json.loads(image[6])
       portfolios[p_temp.id] = p_temp
-   print('Loaded in memory', portfolios)
 
 @app.route('/api/<id>/stream')
 def feed(id):
@@ -41,9 +40,18 @@ def feed(id):
          yield message
    return Response(stream(id), mimetype='text/event-stream')
 
+
+@app.route('/api/ids')
+def ids():
+   return list(portfolios.keys())
+
 @app.route('/api/<id>/status')
 def status(id):
    return portfolios[id].status().toObj()
+
+@app.route('/api/<id>/delete')
+def delete(id):
+   return db.delete(id)
 
 @app.route('/api/<id>/reset/<balance>')
 def reset(id, balance):
@@ -81,4 +89,4 @@ def save():
 
 if (__name__ == "__main__"):
    setup()
-   app.run(debug=True)
+   app.run()
