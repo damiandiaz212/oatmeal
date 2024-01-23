@@ -3,7 +3,7 @@
 [![Portfolio Service](https://github.com/damiandiaz212/oatmeal/actions/workflows/portfolio.yml/badge.svg)](https://github.com/damiandiaz212/oatmeal/actions/workflows/portfolio.yml)
 [![Portfolio Web](https://github.com/damiandiaz212/oatmeal/actions/workflows/dashboard.yml/badge.svg)](https://github.com/damiandiaz212/oatmeal/actions/workflows/dashboard.yml)
 
-An advanced lightweight multi-mock portfolio service for traders and developers to train, test, and refine trading algorithms using real stock prices, market sentiments, and various financial indicators. This platform simulates real-world trading environments, offering in-depth analytics to evaluate algorithm performance in risk-free settings. 
+An advanced lightweight multi-mock portfolio service for traders and developers to train, test, and refine trading algorithms using real stock prices, market sentiments, and various financial indicators. This platform simulates real-world trading environments, offering in-depth analytics to evaluate algorithm performance in risk-free settings.
 
 ---
 ### Features
