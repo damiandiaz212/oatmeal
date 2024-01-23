@@ -16,28 +16,33 @@ class MockImage:
 class TestDatabase(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.db_path = 'test/test_database.db'
-        cls.db = Database(cls.db_path)
+        cls.temp_db_path = 'test/temp_database.db'
+        cls.mock_db_path = 'test/mock_database.db'
+        cls.mock_db = Database(cls.mock_db_path)
 
     @classmethod
     def tearDownClass(cls):
-        cls.db.connection.close()
-        os.remove(cls.db_path)
-
+        cls.mock_db.disconnect()
+       
     def test_save_and_load_all(self):
-        # Testing both save and load_all methods
-        test_image = MockImage('1', 'Test Image', 100.0, 200.0, 300.0, 1.0, 'test_portfolio')
-        self.db.save(test_image)
+        
+        temp_db = Database(self.temp_db_path)
 
-        loaded_images = self.db.load_all().fetchall()
+        test_image = MockImage('1', 'Test Image', 100.0, 200.0, 300.0, 1.0, 'test_portfolio')
+        temp_db.save(test_image)
+
+        loaded_images = temp_db.load_all().fetchall()
         self.assertEqual(len(loaded_images), 1)
         self.assertEqual(loaded_images[0], (test_image.id, test_image.name, test_image.starting, test_image.buying_power, test_image.balance, test_image.adj, test_image.portfolio))
 
-    def test_delete(self):
-        # Add a new item and then delete it
-        test_image = MockImage('2', 'Test Image 2', 100.0, 200.0, 300.0, 1.0, 'test_portfolio2')
-        self.db.save(test_image)
+        temp_db.disconnect()
+        os.remove(self.temp_db_path)
 
-        self.db.delete('2')
-        loaded_images = self.db.load_all().fetchall()
-        self.assertEqual(len(loaded_images), 1)  # since we added one and deleted one, should still be one
+    def test_delete(self):
+      
+        test_image = MockImage('2', 'Test Image 2', 100.0, 200.0, 300.0, 1.0, 'test_portfolio2')
+        self.mock_db.save(test_image)
+
+        self.mock_db.delete('2')
+        loaded_images = self.mock_db.load_all().fetchall()
+        self.assertEqual(len(loaded_images), 1)

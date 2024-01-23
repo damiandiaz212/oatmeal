@@ -22,7 +22,7 @@ db = Database('portfolio.db')
 portfolios = dict()
 
 def setup():
-   images = db.load_all()
+   images = db.load_all().fetchall()
    for image in images:
       temp = MessageAnnouncer()
       p_temp = MockPortfolio(image[0], image[1], image[2], alpha, temp)

@@ -31,3 +31,5 @@ class Database:
         except Exception as e:
             print(f'Failed to execute {statement} to db: ', e)
             return {}, 500
+    def disconnect(self):
+        self.connection.close()
