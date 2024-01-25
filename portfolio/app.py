@@ -1,4 +1,4 @@
-from flask import Flask, send_from_directory, send_file
+from flask import Flask, send_from_directory, send_file, render_template
 from flask_cors import cross_origin, CORS
 from flask import request, jsonify, make_response, Response
 from common.alpha import Alpha
@@ -12,7 +12,7 @@ import sys
 import json
 import uuid
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='', static_folder='dist', template_folder='dist')
 CORS(app)
 
 isLocal = len(sys.argv) > 1 and sys.argv[1] == '--local'
@@ -44,6 +44,10 @@ def validate(request):
    if not id:
       return { "status" : 400, "message": "param 'id' is required" }
    return { "status": 200, "id": id }
+
+@app.route("/")
+def hello():
+    return render_template("index.html")
 
 @app.route('/api/stream')
 @cross_origin()
