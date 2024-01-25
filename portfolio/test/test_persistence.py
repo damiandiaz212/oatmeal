@@ -19,10 +19,6 @@ class TestDatabase(unittest.TestCase):
         cls.temp_db_path = 'test/temp_database.db'
         cls.mock_db_path = 'test/mock_database.db'
         cls.mock_db = Database(cls.mock_db_path)
-
-    @classmethod
-    def tearDownClass(cls):
-        cls.mock_db.disconnect()
        
     def test_save_and_load_all(self):
         
@@ -35,7 +31,7 @@ class TestDatabase(unittest.TestCase):
         self.assertEqual(len(loaded_images), 1)
         self.assertEqual(loaded_images[0], (test_image.id, test_image.name, test_image.starting, test_image.buying_power, test_image.balance, test_image.adj, test_image.portfolio))
 
-        temp_db.disconnect()
+        temp_db = None
         os.remove(self.temp_db_path)
 
     def test_delete(self):

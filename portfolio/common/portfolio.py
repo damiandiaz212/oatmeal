@@ -47,4 +47,4 @@ class MockPortfolio:
             else:
                 standing += (price * value["amount"])
         adjusted = (standing - self.starting)
-        return PortoflioImage(self.id, self.name, self.starting, self.buying_power, standing, adjusted, self.portfolio, stale)
+        return PortoflioImage(self.id, self.name, round(self.starting, 2), round(self.buying_power, 2), round(standing, 2), round(adjusted, 2), self.portfolio, stale)

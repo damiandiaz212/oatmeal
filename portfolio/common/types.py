@@ -17,7 +17,7 @@ class PortoflioImage:
         "starting": self.starting, 
         "buying_power": self.buying_power, 
         "balance": self.balance, 
-        "gain/loss": self.adj, 
+        "adj": self.adj, 
         "portoflio": self.portfolio, 
         "stale": self.stale  
         }

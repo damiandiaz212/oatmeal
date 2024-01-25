@@ -1,35 +1,21 @@
-const baseUrl = ''
-export function registerUser (email: string) {
-  return fetch(`${baseUrl}`, {
-    method: 'POST',
-    body: JSON.stringify({
-      email,
-    }),
+const base = "http://localhost:5000";
+
+export async function getPortfolioIds() {
+  const resp = await fetch(`${base}/api/ids`, {
+    method: "GET",
     headers: {
-      'Content-type': 'application/json; charset=UTF-8',
+      "Content-type": "application/json; charset=UTF-8",
     },
-  })
+  });
+  return resp.json();
 }
-export function uploadImage (email: string, image: any) {
-  return fetch(`${baseUrl}`, {
-    method: 'POST',
-    body: JSON.stringify({
-      email,
-    }),
+
+export async function getPortfolioStatus(id: string) {
+  const resp = await fetch(`${base}/api/status?id=${id}`, {
+    method: "GET",
     headers: {
-      'Content-type': 'application/json; charset=UTF-8',
+      "Content-type": "application/json; charset=UTF-8",
     },
-  })
-}
-export function serveImage (email: string, refImage: any) {
-  return fetch(`${baseUrl}`, {
-    method: 'POST',
-    body: JSON.stringify({
-      email,
-      refImage,
-    }),
-    headers: {
-      'Content-type': 'application/json; charset=UTF-8',
-    },
-  })
+  });
+  return resp.json();
 }

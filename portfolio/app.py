@@ -5,6 +5,7 @@ from common.alpha import Alpha
 from common.portfolio import MockPortfolio
 from common.util import getAlphaKey, format_sse
 from common.messager import MessageAnnouncer
+from common.types import PortoflioImage
 from service.persistence import Database
 import os
 import sys
@@ -22,14 +23,21 @@ db = Database('portfolio.db')
 portfolios = dict()
 
 def setup():
+   db.create_table()
    images = db.load_all().fetchall()
    for image in images:
-      temp = MessageAnnouncer()
-      p_temp = MockPortfolio(image[0], image[1], image[2], alpha, temp)
-      p_temp.starting = image[3]
-      p_temp.buying_power = image[4]
-      p_temp.portfolio = json.loads(image[6])
-      portfolios[p_temp.id] = p_temp
+      temp_announcer = MessageAnnouncer()
+      temp_portfolio = PortoflioImage(image[0], image[1], image[2], image[3], image[4], image[5], '', True)
+      portfolio_obj = json.loads(image[6])
+      p_temp = MockPortfolio(-1, -1, -1, alpha, temp_announcer)
+      p_temp.id = temp_portfolio.id;
+      p_temp.name = temp_portfolio.name;
+      p_temp.starting = temp_portfolio.starting;
+      p_temp.buying_power = temp_portfolio.buying_power;
+      p_temp.balance = temp_portfolio.balance;
+      p_temp.adj = temp_portfolio.adj;
+      p_temp.portfolio = portfolio_obj
+      portfolios[temp_portfolio.id] = p_temp
 
 def validate(request):
    id = request.args.get('id')
@@ -38,6 +46,7 @@ def validate(request):
    return { "status": 200, "id": id }
 
 @app.route('/api/stream')
+@cross_origin()
 def feed():
    def stream(id):
       try:
@@ -50,7 +59,9 @@ def feed():
    validation = validate(request)
    if validation["status"] != 200:
       return validation["message"], validation["status"]
-   return Response(stream(validation["id"]), mimetype='text/event-stream')
+   response = Response(stream(validation["id"]), mimetype='text/event-stream')
+   response.headers.add("Access-Control-Allow-Origin", "*")
+   return response
 
 @app.route('/api/ids')
 def ids():
@@ -87,6 +98,7 @@ def buy(symbol, amount):
       return validation["message"], validation["status"]
    order = portfolios[validation["id"]].ex_buy(symbol, int(amount))
    if "error" not in order:
+      db.save(portfolios[validation["id"]].status())
       return {}, 200
    return order
 
@@ -97,6 +109,7 @@ def sell_all(symbol):
       return validation["message"], validation["status"]
    order = portfolios[validation["id"]].ex_sell_all(symbol)
    if "error" not in order:
+      db.save(portfolios[validation["id"]].status())
       return {}, 200
    return order
 

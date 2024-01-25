@@ -1,6 +1,13 @@
 body {
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background-color: #352f44;
+}
+.ant-statistic-title {
+  color: #b9b4c7 !important;
+}
+.ant-card-head {
+  border-color: #352f44 !important;
+}
+.ant-card-head-title {
+  color: #b9b4c7 !important;
+  font-size: x-large;
 }

@@ -2,9 +2,14 @@ import sqlite3
 
 class Database:
     def __init__(self, path):
-        self.connection = sqlite3.connect(path, check_same_thread=False, isolation_level=None)
-        self.cursor = self.connection.cursor()
-        self.cursor.execute("CREATE TABLE if not exists portfolio (id TEXT PRIMARY KEY, name TEXT, starting REAL, buying_power REAL, balance REAL, adj REAL, portfolio TEXT)")
+        self.path = path
+        self.connection = sqlite3.connect(self.path, check_same_thread=False, isolation_level=None)
+        self.create_table()
+    def __del__(self):
+        self.connection.close()
+    def create_table(self):
+        query = "CREATE TABLE if not exists portfolio (id TEXT PRIMARY KEY, name TEXT, starting REAL, buying_power REAL, balance REAL, adj REAL, portfolio TEXT)"
+        return self.execute_query('CREATE', query)
     def save(self, image):
         query = f"""
                 INSERT INTO portfolio VALUES('{image.id}', '{image.name}', {image.starting}, {image.buying_power}, {image.balance}, {image.adj}, '{image.portfolio}')
@@ -27,9 +32,8 @@ class Database:
         return self.execute_query('DELETE', query)
     def execute_query(self, statement, query):
         try:
-            return self.cursor.execute(query)
+            result = self.connection.cursor().execute(query)
+            return result
         except Exception as e:
             print(f'Failed to execute {statement} to db: ', e)
             return {}, 500
-    def disconnect(self):
-        self.connection.close()
