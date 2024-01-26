@@ -12,7 +12,7 @@ import sys
 import json
 import uuid
 
-app = Flask(__name__, static_folder='dist')
+app = Flask(__name__, static_folder='../dashboard/dist')
 CORS(app)
 
 isLocal = len(sys.argv) > 1 and sys.argv[1] == '--local'
