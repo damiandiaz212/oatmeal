@@ -46,6 +46,7 @@ def validate(request):
    return { "status": 200, "id": id }
 
 @app.route("/")
+@cross_origin()
 def hello():
     return render_template("index.html")
 
