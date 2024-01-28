@@ -45,9 +45,9 @@ def validate(request):
       return { "status" : 400, "message": "param 'id' is required" }
    return { "status": 200, "id": id }
 
-@app.route("/")
-def hello():
-    return render_template("index.html")
+@app.route('/')
+def serve():
+   return send_from_directory(app.static_folder, 'index.html')
 
 @app.route('/api/stream')
 @cross_origin()
