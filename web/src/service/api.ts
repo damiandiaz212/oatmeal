@@ -1,8 +1,9 @@
-const base = "http://localhost:5000";
+const base = "";
 
 export async function getPortfolioIds() {
   const resp = await fetch(`${base}/api/ids`, {
     method: "GET",
+    mode: 'same-origin',
     headers: {
       "Content-type": "application/json; charset=UTF-8",
     },
@@ -13,6 +14,7 @@ export async function getPortfolioIds() {
 export async function getPortfolioStatus(id: string) {
   const resp = await fetch(`${base}/api/status?id=${id}`, {
     method: "GET",
+    mode: 'same-origin',
     headers: {
       "Content-type": "application/json; charset=UTF-8",
     },
