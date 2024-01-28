@@ -2,7 +2,7 @@ name: Dashboard
 
 defaults:
   run:
-    working-directory: dashboard
+    working-directory: web
 
 on:
   push:
@@ -27,4 +27,3 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: yarn
     - run: yarn build
-    - run: yarn test

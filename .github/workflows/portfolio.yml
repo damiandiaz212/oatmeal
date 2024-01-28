@@ -1,9 +1,5 @@
 name: Portfolio
 
-defaults:
-  run:
-    working-directory: portfolio
-
 on:
   push:
     branches: [ "master" ]

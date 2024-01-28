@@ -12,7 +12,7 @@ import sys
 import json
 import uuid
 
-app = Flask(__name__, static_url_path='', static_folder='dist', template_folder='dist')
+app = Flask(__name__, static_url_path='', static_folder='web/dist', template_folder='web/dist')
 CORS(app)
 
 isLocal = len(sys.argv) > 1 and sys.argv[1] == '--local'
