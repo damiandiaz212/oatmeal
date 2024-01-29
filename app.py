@@ -59,6 +59,7 @@ def serve():
 @app.route('/api/init')
 def init():
    setup()
+   return {}, 200
 
 @app.route('/api/stream')
 @cross_origin()

@@ -89,7 +89,7 @@ const PortfolioCard = ({ id }: { id: string }) => {
                   title="Balance"
                   value={portfolio?.balance}
                   precision={2}
-                  valueStyle={{ fontSize: "1.2rem" }}
+                  valueStyle={{ fontSize: "1rem" }}
                   prefix="$"
                 />
                 <br />
@@ -115,7 +115,7 @@ const PortfolioCard = ({ id }: { id: string }) => {
                 <div
                   id="scrollableDiv"
                   style={{
-                    height: 250,
+                    height: 225,
                     overflow: "auto",
                     width: 200,
                     padding: "1rem",
@@ -137,7 +137,7 @@ const PortfolioCard = ({ id }: { id: string }) => {
                   value={calculateAdj()}
                   precision={2}
                   valueStyle={{
-                    fontSize: "3rem",
+                    fontSize: "2rem",
                     fontWeight: "600",
                     color: calculateAdj() >= 0 ? "#346751" : "#C84B31",
                   }}
