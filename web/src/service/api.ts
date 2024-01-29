@@ -32,3 +32,14 @@ export async function getTransactions(id: string) {
   });
   return resp.json();
 }
+
+export async function deletePortfolio(id: string) {
+  const resp = await fetch(`${base}/api/delete?id=${id}`, {
+    method: "GET",
+    mode: "same-origin",
+    headers: {
+      "Content-type": "application/json; charset=UTF-8",
+    },
+  });
+  return resp.json();
+}

@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import PortfolioCard from "../components/PortfolioCard";
-import { getPortfolioIds, getPortfolioStatus } from "../service/api";
+import {
+  deletePortfolio,
+  getPortfolioIds,
+  getPortfolioStatus,
+} from "../service/api";
 import { List } from "antd";
 
 const AdminLayout = () => {
@@ -14,6 +18,12 @@ const AdminLayout = () => {
     fetchData();
   }, []);
 
+  const handleDelete = (id: string) => {
+    deletePortfolio(id).then(() => {
+      setIds(ids.filter((_id) => _id != id));
+    });
+  };
+
   return (
     <>
       <List
@@ -23,7 +33,7 @@ const AdminLayout = () => {
         dataSource={ids}
         renderItem={(id) => (
           <List.Item>
-            <PortfolioCard id={id} />
+            <PortfolioCard id={id} onDelete={(id) => handleDelete(id)} />
           </List.Item>
         )}
       />

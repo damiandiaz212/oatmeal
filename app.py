@@ -29,12 +29,13 @@ portfolios = dict()
 transactions = dict()
 
 def setup():
+   portfolios = dict()
+   transactions = dict()
    images = portfolioDB.load_all()
    for image in images:
-      temp_announcer = MessageAnnouncer()
       temp_portfolio = PortoflioImage(image[0], image[1], image[2], image[3], image[4], image[5], '', True)
       portfolio_obj = json.loads(image[6])
-      p_temp = MockPortfolio(-1, -1, -1, alpha, temp_announcer)
+      p_temp = MockPortfolio(-1, -1, -1, alpha)
       p_temp.id = temp_portfolio.id;
       p_temp.name = temp_portfolio.name;
       p_temp.starting = temp_portfolio.starting;
@@ -61,24 +62,6 @@ def init():
    setup()
    return {}, 200
 
-@app.route('/api/stream')
-@cross_origin()
-def feed():
-   def stream(id):
-      try:
-         messages = portfolios[id].announcer.listen()
-         while True:
-            message = messages.get()
-            yield message
-      except:
-         return f"id:{id} does not exist in portfolio", 404
-   validation = validate(request)
-   if validation["status"] != 200:
-      return validation["message"], validation["status"]
-   response = Response(stream(validation["id"]), mimetype='text/event-stream')
-   response.headers.add("Access-Control-Allow-Origin", "*")
-   return response
-
 @app.route('/api/ids')
 def ids():
    return list(portfolios.keys())
@@ -90,12 +73,15 @@ def status():
       return validation["message"], validation["status"]
    return portfolios[validation["id"]].status().toObj()
 
-# @app.route('/api/delete')
-# def delete():
-#    validation = validate(request)
-#    if validation["status"] != 200:
-#       return validation["message"], validation["status"]
-#    return db.delete(validation["id"])
+@app.route('/api/delete')
+def delete():
+   validation = validate(request)
+   if validation["status"] != 200:
+      return validation["message"], validation["status"]
+   portfolioDB.delete(validation["id"])
+   transactionDB.purge(validation["id"])
+   setup()
+   return {}, 200
 
 @app.route('/api/reset/<balance>')
 def reset(balance):
@@ -113,14 +99,14 @@ def buy(symbol, amount):
    if validation["status"] != 200:
       return validation["message"], validation["status"]
    resp = portfolios[validation["id"]].ex_buy(symbol, int(amount))
-   if "error" in resp:
+   if "error" in resp[0]:
       return resp
    order = resp[0]
    receipt = ( validation["id"], order["order"], order["symbol"], order["amount"], order["price"], str(datetime.datetime.now().timestamp()) )
    portfolioDB.update_entry(portfolios[validation["id"]].status())
    transactions[validation["id"]].append(receipt)
    transactionDB.append_entry(receipt)
-   return {}, 200
+   return resp
 
 
 @app.route('/api/sell_all/<symbol>')
@@ -129,20 +115,19 @@ def sell_all(symbol):
    if validation["status"] != 200:
       return validation["message"], validation["status"]
    resp = portfolios[validation["id"]].ex_sell_all(symbol)
-   if "error" in resp:
+   if "error" in resp[0]:
          return resp
    order = resp[0]
    receipt = ( validation["id"], order["order"], order["symbol"], order["amount"], order["price"], str(datetime.datetime.now().timestamp()) )
    portfolioDB.update_entry(portfolios[validation["id"]].status())
    transactions[validation["id"]].append(receipt)
    transactionDB.append_entry(receipt)
-   return {}, 200
+   return resp
 
 @app.route('/api/create/<name>/<balance>')
 def create(name, balance):
    id = str(uuid.uuid4())
-   temp = MessageAnnouncer()
-   portfolios[id] = MockPortfolio(id, name, float(balance), alpha, temp)
+   portfolios[id] = MockPortfolio(id, name, float(balance), alpha)
    portfolioDB.create_entry(portfolios[id].status())
    transactions[id] = []
    return portfolios[id].status().toObj(), 200

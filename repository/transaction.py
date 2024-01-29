@@ -18,8 +18,8 @@ class TransactionDB:
     def fetch_all_by_id(self, id):
         query = f"SELECT * FROM transaction WHERE id='{id}'"
         return self.execute_query(query).fetchall()
-    def clear(self):
-        query = "DROP TABLE transaction"
+    def purge(self, id):
+        query = f"DELETE FROM transaction WHERE id='{id}'"
         self.execute_query(query)
     def execute_query(self, statement):
         try:

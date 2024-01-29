@@ -2,10 +2,12 @@ import React, { useEffect, useRef, useState } from "react";
 import {
   ArrowDownOutlined,
   ArrowUpOutlined,
+  CopyOutlined,
   DeleteColumnOutlined,
   DeleteFilled,
   DeleteOutlined,
   SettingFilled,
+  SettingOutlined,
 } from "@ant-design/icons";
 import {
   Card,
@@ -17,6 +19,8 @@ import {
   List,
   Badge,
   Button,
+  Space,
+  Dropdown,
 } from "antd";
 import { Typography } from "antd";
 import { getPortfolioStatus, getTransactions } from "@/service/api";
@@ -29,7 +33,13 @@ interface IOrder {
   amount: number;
 }
 
-const PortfolioCard = ({ id }: { id: string }) => {
+const PortfolioCard = ({
+  id,
+  onDelete,
+}: {
+  id: string;
+  onDelete: (id: string) => void;
+}) => {
   const [portfolio, setPortfolio] = useState<any>();
   const [data, setData] = useState<IOrder | null>(null);
   const [transactions, setTransactions] = useState();
@@ -72,6 +82,34 @@ const PortfolioCard = ({ id }: { id: string }) => {
     }
   };
 
+  const items = [
+    {
+      key: "1",
+      label: (
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => navigator.clipboard.writeText(portfolio.id)}
+        >
+          Copy ID <CopyOutlined style={{ color: "grey" }} rev={undefined} />
+        </a>
+      ),
+    },
+    {
+      key: "2",
+      danger: true,
+      label: (
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => onDelete(portfolio.id)}
+        >
+          Delete
+        </a>
+      ),
+    },
+  ];
+
   return (
     <>
       <div style={{ padding: "2rem" }}>
@@ -80,7 +118,16 @@ const PortfolioCard = ({ id }: { id: string }) => {
             title={portfolio?.name}
             bordered={false}
             extra={
-              <Button type="default" icon={<SettingFilled rev={undefined} />} />
+              <Dropdown menu={{ items }}>
+                <a onClick={(e) => e.preventDefault()}>
+                  <Space>
+                    <SettingOutlined
+                      style={{ color: "grey" }}
+                      rev={undefined}
+                    />
+                  </Space>
+                </a>
+              </Dropdown>
             }
           >
             <Row gutter={24}>

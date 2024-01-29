@@ -23,7 +23,7 @@ class PortfolioDB:
         query = "SELECT * FROM portfolio"
         return self.execute_query(query).fetchall()
     def delete(self, id):
-        query = f"DELETE FROM portfolio WHERE id={id}"
+        query = f"DELETE FROM portfolio WHERE id='{id}'"
         self.execute_query(query)
     def clear(self):
         query = "DELETE FROM portfolio"
