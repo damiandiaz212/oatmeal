@@ -1,8 +1,8 @@
-import { App } from "@/admin";
+import { Admin } from "@/admin";
 import { render, screen } from "@testing-library/react";
 
 it("Test", () => {
-  render(<App />);
+  render(<Admin />);
 
   const button = screen.getByRole("button");
   expect(button).toBeEnabled();
