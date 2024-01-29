@@ -3,28 +3,33 @@ from flask_cors import cross_origin, CORS
 from flask import request, jsonify, make_response, Response
 from common.alpha import Alpha
 from common.portfolio import MockPortfolio
-from common.util import getAlphaKey, format_sse
+from common.util import get_alpha_key, format_sse, get_db_creds
 from common.messager import MessageAnnouncer
 from common.types import PortoflioImage
-from service.persistence import Database
+from repository.portfolio import PortfolioDB
+from repository.transaction import TransactionDB
 import os
 import sys
 import json
 import uuid
+import datetime
 
 app = Flask(__name__, static_url_path='', static_folder='web/dist', template_folder='web/dist')
 CORS(app)
 
-isLocal = len(sys.argv) > 1 and sys.argv[1] == '--local'
-key = getAlphaKey(isLocal)
+is_local = len(sys.argv) > 1 and sys.argv[1] == '--local'
+key = get_alpha_key(is_local)
+db_path = get_db_creds(is_local)
 alpha = Alpha(key)
-db = Database('portfolio.db')
+
+portfolioDB = PortfolioDB(db_path)
+transactionDB = TransactionDB(db_path)
 
 portfolios = dict()
+transactions = dict()
 
 def setup():
-   db.create_table()
-   images = db.load_all().fetchall()
+   images = portfolioDB.load_all()
    for image in images:
       temp_announcer = MessageAnnouncer()
       temp_portfolio = PortoflioImage(image[0], image[1], image[2], image[3], image[4], image[5], '', True)
@@ -38,6 +43,8 @@ def setup():
       p_temp.adj = temp_portfolio.adj;
       p_temp.portfolio = portfolio_obj
       portfolios[temp_portfolio.id] = p_temp
+   for pid in portfolios.keys():
+      transactions[pid] = transactionDB.fetch_all_by_id(pid)
 
 def validate(request):
    id = request.args.get('id')
@@ -100,35 +107,47 @@ def buy(symbol, amount):
    validation = validate(request)
    if validation["status"] != 200:
       return validation["message"], validation["status"]
-   order = portfolios[validation["id"]].ex_buy(symbol, int(amount))
-   if "error" not in order:
-      db.save(portfolios[validation["id"]].status())
-      return {}, 200
-   return order
+   resp = portfolios[validation["id"]].ex_buy(symbol, int(amount))
+   if "error" in resp:
+      return resp
+   order = resp[0]
+   receipt = ( validation["id"], order["order"], order["symbol"], order["amount"], order["price"], str(datetime.datetime.now().timestamp()) )
+   portfolioDB.update_entry(portfolios[validation["id"]].status())
+   transactions[validation["id"]].append(receipt)
+   transactionDB.append_entry(receipt)
+   return {}, 200
+
 
 @app.route('/api/sell_all/<symbol>')
 def sell_all(symbol):
    validation = validate(request)
    if validation["status"] != 200:
       return validation["message"], validation["status"]
-   order = portfolios[validation["id"]].ex_sell_all(symbol)
-   if "error" not in order:
-      db.save(portfolios[validation["id"]].status())
-      return {}, 200
-   return order
+   resp = portfolios[validation["id"]].ex_sell_all(symbol)
+   if "error" in resp:
+         return resp
+   order = resp[0]
+   receipt = ( validation["id"], order["order"], order["symbol"], order["amount"], order["price"], str(datetime.datetime.now().timestamp()) )
+   portfolioDB.update_entry(portfolios[validation["id"]].status())
+   transactions[validation["id"]].append(receipt)
+   transactionDB.append_entry(receipt)
+   return {}, 200
 
 @app.route('/api/create/<name>/<balance>')
 def create(name, balance):
    id = str(uuid.uuid4())
    temp = MessageAnnouncer()
    portfolios[id] = MockPortfolio(id, name, float(balance), alpha, temp)
+   portfolioDB.create_entry(portfolios[id].status())
+   transactions[id] = []
    return portfolios[id].status().toObj(), 200
 
-@app.route('/api/save')
-def save():
-   for p in portfolios.values():
-      db.save(p.status())
-   return {}, 200
+@app.route('/api/transactions')
+def get_transactions():
+   validation = validate(request)
+   if validation["status"] != 200:
+      return validation["message"], validation["status"]
+   return transactions[validation["id"]]
 
 if (__name__ == "__main__"):
    setup()

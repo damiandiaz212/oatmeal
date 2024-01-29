@@ -3,4 +3,5 @@ __pycache__
 node_modules
 venv
 ALPHA_KEY.txt
+DB_EXTERNAL.txt
 portfolio.db

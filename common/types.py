@@ -21,3 +21,19 @@ class PortoflioImage:
         "portoflio": self.portfolio, 
         "stale": self.stale  
         }
+
+class TransactionImage:
+    def __init__(self, id, type, symbol, amount, price):
+        self.id = id
+        self.type = type
+        self.symbol = symbol
+        self.amount = amount
+        self.price = price
+    def toObj(self):
+       return { 
+        "id": self.id,
+        "type": self.type,
+        "symbol": self.symbol, 
+        "amount": self.amount, 
+        "price": self.price,
+        }

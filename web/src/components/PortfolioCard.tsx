@@ -1,8 +1,25 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ArrowDownOutlined, ArrowUpOutlined } from "@ant-design/icons";
-import { Card, Col, Row, Statistic, Spin, message } from "antd";
+import {
+  ArrowDownOutlined,
+  ArrowUpOutlined,
+  DeleteColumnOutlined,
+  DeleteFilled,
+  DeleteOutlined,
+  SettingFilled,
+} from "@ant-design/icons";
+import {
+  Card,
+  Col,
+  Row,
+  Statistic,
+  Spin,
+  message,
+  List,
+  Badge,
+  Button,
+} from "antd";
 import { Typography } from "antd";
-import { getPortfolioStatus } from "@/service/api";
+import { getPortfolioStatus, getTransactions } from "@/service/api";
 
 const { Title } = Typography;
 
@@ -15,39 +32,56 @@ interface IOrder {
 const PortfolioCard = ({ id }: { id: string }) => {
   const [portfolio, setPortfolio] = useState<any>();
   const [data, setData] = useState<IOrder | null>(null);
-
-  // useEffect(() => {
-  //   const sse = new EventSource(`http://localhost:5000/api/stream?id=${id}`);
-  //   sse.onmessage = (e) => setData(e.data);
-  //   return () => {
-  //     sse.close();
-  //   };
-  // }, []);
-
-  // useEffect(() => {
-  //   if (data) {
-  //     console.log(data);
-  //   }
-  // }, [data]);
+  const [transactions, setTransactions] = useState();
 
   useEffect(() => {
     async function fetchData() {
       const portfolio = await getPortfolioStatus(id);
+      const transactions = await getTransactions(id);
       setPortfolio(portfolio);
+      setTransactions(transactions.reverse());
     }
     fetchData();
   }, [id]);
 
+  const getOrderEntry = (item: any) => {
+    return (
+      <>
+        <div
+          style={{
+            backgroundColor: item[1] === "sell" ? "#346751" : "#C84B31",
+            padding: "0.1rem 0.3rem 0.1rem 0.3rem",
+            borderRadius: "3px",
+            fontWeight: "700",
+          }}
+        >
+          {item[1].toUpperCase()}
+        </div>
+        &nbsp;{item[2].toUpperCase()} x {item[3]} @ ${item[4]}
+      </>
+    );
+  };
+
+  const calculateAdj = () => {
+    if (portfolio) {
+      return (
+        ((portfolio.balance - portfolio.starting) / portfolio.starting) * 100
+      );
+    } else {
+      return 0.0;
+    }
+  };
+
   return (
     <>
-      <div style={{ padding: "2rem", maxWidth: "250px" }}>
+      <div style={{ padding: "2rem" }}>
         <Spin spinning={!portfolio}>
           <Card
             title={portfolio?.name}
             bordered={false}
-            style={{
-              backgroundColor: "#5C5470",
-            }}
+            extra={
+              <Button type="default" icon={<SettingFilled rev={undefined} />} />
+            }
           >
             <Row gutter={24}>
               <Col>
@@ -55,7 +89,7 @@ const PortfolioCard = ({ id }: { id: string }) => {
                   title="Balance"
                   value={portfolio?.balance}
                   precision={2}
-                  valueStyle={{ fontSize: "1rem", color: "white" }}
+                  valueStyle={{ fontSize: "1.2rem" }}
                   prefix="$"
                 />
                 <br />
@@ -65,31 +99,57 @@ const PortfolioCard = ({ id }: { id: string }) => {
                   precision={2}
                   valueStyle={{
                     fontSize: "1rem",
-                    color: "white",
                   }}
                   prefix="$"
                 />
-                <Statistic
-                  value={0.0}
-                  precision={2}
-                  valueStyle={{
-                    color: "#03C988",
-                    fontSize: "1rem",
-                    fontWeight: "700",
-                  }}
-                  prefix={<ArrowUpOutlined rev={undefined} />}
-                  suffix="%"
-                />
-              </Col>
-              <Col>
+                <br />
                 <Statistic
                   title="Buying Power"
                   value={portfolio?.buying_power}
                   precision={2}
-                  valueStyle={{ fontSize: "1rem", color: "white" }}
+                  valueStyle={{ fontSize: "1rem" }}
                   prefix="$"
                 />
-                <br />
+              </Col>
+              <Col>
+                <div
+                  id="scrollableDiv"
+                  style={{
+                    height: 250,
+                    overflow: "auto",
+                    width: 200,
+                    padding: "1rem",
+                  }}
+                >
+                  <List
+                    dataSource={transactions}
+                    renderItem={(item: any) => (
+                      <List.Item>{getOrderEntry(item)}</List.Item>
+                    )}
+                  />
+                </div>
+              </Col>
+            </Row>
+            <br />
+            <Row>
+              <Col>
+                <Statistic
+                  value={calculateAdj()}
+                  precision={2}
+                  valueStyle={{
+                    fontSize: "3rem",
+                    fontWeight: "600",
+                    color: calculateAdj() >= 0 ? "#346751" : "#C84B31",
+                  }}
+                  prefix={
+                    calculateAdj() > 0 ? (
+                      <ArrowUpOutlined rev={undefined} />
+                    ) : (
+                      <ArrowDownOutlined rev={undefined} />
+                    )
+                  }
+                  suffix="%"
+                />
               </Col>
             </Row>
           </Card>

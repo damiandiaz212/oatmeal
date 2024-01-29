@@ -21,7 +21,7 @@ class MockPortfolio:
         order =  { "order": "buy", "symbol": symbol, "amount": amount, "price": price  }
         msg = format_sse(data=order)
         self.announcer.announce(msg=msg)
-        return {}, 200
+        return order, 200
     def ex_sell_all(self, symbol):
         price = self.alpha_svc.price(symbol)
         if type(price) is not float and "error" in price:
@@ -34,7 +34,7 @@ class MockPortfolio:
         order = { "order": "sell", "symbol": symbol, "amount": order["amount"], "price": price, "gain/loss": adjusted  }
         msg = format_sse(data=order)
         self.announcer.announce(msg=msg)
-        return {}, 200
+        return order, 200
     def status(self):
         standing = self.buying_power
         stale = False
