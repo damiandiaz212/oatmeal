@@ -85,12 +85,12 @@ def status():
       return validation["message"], validation["status"]
    return portfolios[validation["id"]].status().toObj()
 
-@app.route('/api/delete')
-def delete():
-   validation = validate(request)
-   if validation["status"] != 200:
-      return validation["message"], validation["status"]
-   return db.delete(validation["id"])
+# @app.route('/api/delete')
+# def delete():
+#    validation = validate(request)
+#    if validation["status"] != 200:
+#       return validation["message"], validation["status"]
+#    return db.delete(validation["id"])
 
 @app.route('/api/reset/<balance>')
 def reset(balance):
