@@ -56,6 +56,10 @@ def validate(request):
 def serve():
    return send_from_directory(app.static_folder, 'index.html')
 
+@app.route('/api/init')
+def init():
+   setup()
+
 @app.route('/api/stream')
 @cross_origin()
 def feed():
