@@ -29,8 +29,6 @@ portfolios = dict()
 transactions = dict()
 
 def setup():
-   portfolios = dict()
-   transactions = dict()
    images = portfolioDB.load_all()
    for image in images:
       temp_portfolio = PortoflioImage(image[0], image[1], image[2], image[3], image[4], image[5], '', True)
